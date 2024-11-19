@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx http-server"
+    "start": "npx http-server -c-1"
   },
   "author": "danny50610@yahoo.com.tw",
   "license": "Apache-2.0",
