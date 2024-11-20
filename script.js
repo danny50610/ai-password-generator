@@ -23,14 +23,17 @@
         return null;
     };
 
+    const systemPromptRole = `
+Think step by step, and when you finally output the result, put it on a separate line and add: "Output: " at the beginning.
+You are an office assistant responsible for helping your supervisor generate passwords that meet company requirements.
+    `;
+
     const findMaxPasswordLength = async (passwordRules) => {
         const session = await self.ai.languageModel.create({
             temperature: 0,
             topK: 3,
             systemPrompt: `
-Think step by step, and when you finally output the result, put it on a separate line and add: "Output: " at the beginning.
-You are an office assistant responsible for helping your supervisor generate passwords that meet company requirements.
-
+${systemPromptRole}
 If the company's password complexity does not have a minimum password length limit, the default is a minimum of 8 characters
 If the company's password complexity does not have a maximum password length limit, the default maximum number of characters requires twice the minimum number of characters.
 
@@ -51,9 +54,90 @@ Regarding this requirement, what is the maximum number of characters in the pass
         return parseLLMoutput(result);
     };
 
+    const characterSets = [
+        {
+            'name': 'Lowercase letters (a-z)',
+            'chars': 'abcdefghijklmnopqrstuvwxyz',
+        },
+        {
+            'name': 'Uppercase letters (A-Z)',
+            'chars': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        },
+        {
+            'name': 'Numbers (0-9)',
+            'chars': '0123456789',
+        },
+        {
+            'name': 'Special characters (!@#$%^&*_+)',
+            'chars': '!@#$%^&*_+',
+        }
+    ];
+    const findRequirementCharSet = async (passwordRules) => {
+        const requirementCharSet = [];
+        for (const charSet of characterSets) {
+            const result = await testRequirementCharSet(passwordRules, charSet.name);
+            if (result === 'yes' || result === 'true') {
+                requirementCharSet.push(charSet);
+            }
+        }
+
+        return requirementCharSet;
+    };
+
+    const testRequirementCharSet = async (passwordRules, characterSetName) => {
+        const session = await self.ai.languageModel.create({
+            temperature: 0,
+            topK: 3,
+            systemPrompt: `
+${systemPromptRole}
+Available character sets include:
+${characterSets.map((charSet) => `- ${charSet.name}`).join("\n")}
+            `,
+        });
+
+        const result = await session.prompt(`
+The following are the company’s password complexity requirements:
+\`\`\`
+${passwordRules}
+\`\`\`
+
+Regarding this requirement, is ${characterSetName} required in the password?
+        `);
+
+        session.destroy();
+
+        console.log(result);
+
+        return parseLLMoutput(result).toLowerCase();
+    };
+
+    const generateRandomPassword = (length, requirementCharSet) => {
+        const characterSetsString = requirementCharSet.map((charSet) => charSet.chars).join('');
+        const characterSetLength = characterSetsString.length;
+
+        const randomIndex = new Uint32Array(length);
+        self.crypto.getRandomValues(randomIndex);
+
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            password += characterSetsString[randomIndex[i] % characterSetLength];
+        }
+
+        return password;
+    };
+
     generateButton.addEventListener("click", async () => {
         const passwordRules = passwordRulesInput.value.trim();
 
-        const maxPasswordLength = findMaxPasswordLength(passwordRules);
+        const maxPasswordLength = await findMaxPasswordLength(passwordRules);
+        const requirementCharSet = await findRequirementCharSet(passwordRules);
+
+        console.log(maxPasswordLength);
+        console.log(requirementCharSet);
+
+        const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
+        console.log(password);
+
+        // TODO: check password
     });
 })();
