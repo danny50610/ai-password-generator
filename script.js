@@ -35,7 +35,7 @@ You are an office assistant responsible for helping your supervisor generate pas
             systemPrompt: `
 ${systemPromptRole}
 If the company's password complexity does not have a minimum password length limit, the default is a minimum of 8 characters
-If the company's password complexity does not have a maximum password length limit, the default maximum number of characters requires twice the minimum number of characters.
+If the company's password complexity does not have a maximum password length limit, the default maximum number of characters requires same as the minimum number of characters.
 
             `,
         });
