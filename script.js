@@ -15,11 +15,17 @@
     // TEST
     passwordRulesInput.value = 'At least 10 characters, must include a mix of letters and numbers, with no more than 4 consecutive numeric characters';
 
-    generateButton.addEventListener("click", async () => {
-        const prompt = passwordRulesInput.value.trim();
+    const parseLLMoutput = (llmOutput) => {
+        const outputIndex = llmOutput.lastIndexOf("Output:");
+        if (outputIndex !== -1) {
+            return llmOutput.substring(outputIndex + 7).trim();
+        }
+        return null;
+    };
 
+    const findMaxPasswordLength = async (passwordRules) => {
         const session = await self.ai.languageModel.create({
-            temperature: 0.7,
+            temperature: 0,
             topK: 3,
             systemPrompt: `
 Think step by step, and when you finally output the result, put it on a separate line and add: "Output: " at the beginning.
@@ -34,14 +40,20 @@ If the company's password complexity does not have a maximum password length lim
         const result = await session.prompt(`
 The following are the company’s password complexity requirements:
 \`\`\`
-${prompt}
+${passwordRules}
 \`\`\`
 
 Regarding this requirement, what is the maximum number of characters in the password?
         `);
 
-        console.log(result);
-
         session.destroy();
+
+        return parseLLMoutput(result);
+    };
+
+    generateButton.addEventListener("click", async () => {
+        const passwordRules = passwordRulesInput.value.trim();
+
+        const maxPasswordLength = findMaxPasswordLength(passwordRules);
     });
 })();
