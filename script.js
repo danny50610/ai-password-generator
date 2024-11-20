@@ -26,6 +26,7 @@
     const systemPromptRole = `
 Think step by step, and when you finally output the result, put it on a separate line and add: "Output: " at the beginning.
 You are an office assistant responsible for helping your supervisor generate passwords that meet company requirements.
+
     `;
 
     const findMaxPasswordLength = async (passwordRules) => {
@@ -106,8 +107,6 @@ Regarding this requirement, is ${characterSetName} required in the password?
 
         session.destroy();
 
-        console.log(result);
-
         return parseLLMoutput(result).toLowerCase();
     };
 
@@ -126,6 +125,36 @@ Regarding this requirement, is ${characterSetName} required in the password?
         return password;
     };
 
+    const checkPasswordValid = async (password, passwordRules) => { 
+        const session = await self.ai.languageModel.create({
+            temperature: 0,
+            topK: 3,
+            systemPrompt: `
+${systemPromptRole}
+
+            `,
+        });
+
+        const result = await session.prompt(`
+The following are the company’s password complexity requirements:
+\`\`\`
+${passwordRules}
+\`\`\`
+
+The password chosen by the supervisor is:
+\`\`\`
+12345678
+\`\`\`
+
+Is the password valid?
+If it does not valid, please output the reason
+        `);
+
+        session.destroy();
+
+        return parseLLMoutput(result);
+    };
+
     generateButton.addEventListener("click", async () => {
         const passwordRules = passwordRulesInput.value.trim();
 
@@ -138,6 +167,7 @@ Regarding this requirement, is ${characterSetName} required in the password?
         const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
         console.log(password);
 
-        // TODO: check password
+        const passwordValidResult = await checkPasswordValid(password, passwordRules);
+        console.log(passwordValidResult);
     });
 })();
