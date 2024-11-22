@@ -178,7 +178,8 @@ If it does not valid, please output the reason
         const passwordValidResult = await checkPasswordValid(password, passwordRules);
         console.log(passwordValidResult);
 
-        if (passwordValidResult.toLowerCase() === 'yes') {
+        const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
+        if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'vaild') {
             passwordCode.innerText = password;
             generateSuccess.style.display = "block";
         } else {
