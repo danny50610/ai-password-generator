@@ -3,6 +3,7 @@
     const passwordRulesInput = document.getElementById("password-rules-input");
     const generateButton = document.getElementById("generate");
     const passwordCode = document.getElementById("password");
+    const passwordCopyButton = document.getElementById("copy-password");
 
     if (!self.ai || !self.ai.languageModel) {
         errorMessage.style.display = "block";
@@ -176,5 +177,15 @@ If it does not valid, please output the reason
         } else {
             // TODO: show error message
         }
+    });
+
+    passwordCopyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(passwordCode.innerText)
+            .then(() => {
+                console.log('Password copied to clipboard');
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     });
 })();
