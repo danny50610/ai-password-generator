@@ -4,6 +4,9 @@
     const generateButton = document.getElementById("generate");
     const passwordCode = document.getElementById("password");
     const passwordCopyButton = document.getElementById("copy-password");
+    const generateSuccess = document.getElementById("generate-success");
+    const generateFailed = document.getElementById("generate-failed");
+    const passwordFailedMessage = document.getElementById("password-failed-message");
 
     if (!self.ai || !self.ai.languageModel) {
         errorMessage.style.display = "block";
@@ -174,8 +177,10 @@ If it does not valid, please output the reason
 
         if (passwordValidResult.toLowerCase() === 'yes') {
             passwordCode.innerText = password;
+            generateSuccess.style.display = "block";
         } else {
-            // TODO: show error message
+            passwordFailedMessage.innerText = 'Generate Password: ' + password + "\n" + passwordValidResult;
+            generateFailed.style.display = "block";
         }
     });
 

@@ -35,8 +35,16 @@
             <h2>Result</h2>
             <div class="card">
                 <div class="card-body">
-                    <code id="password"></code>
-                    <button type="button" id="copy-password" class="btn btn-link p-1"><i class="fa-regular fa-copy"></i></button>
+                    <div id="generate-success" style="display: none;">
+                        <code id="password"></code>
+                        <button type="button" id="copy-password" class="btn btn-link p-1"><i class="fa-regular fa-copy"></i></button>
+                    </div>
+                    <div id="generate-failed" style="display: none;">
+                        <div class="alert alert-danger m-0" role="alert">
+                            <h4 class="alert-heading">Generate Failed</h4>
+                            <p id="password-failed-message"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
