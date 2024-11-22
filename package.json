@@ -2,13 +2,16 @@
   "name": "@danny50610/2024-google-chrome-built-in-ai-challenge",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "npx http-server -c-1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "author": "danny50610@yahoo.com.tw",
   "license": "Apache-2.0",
   "devDependencies": {
-    "http-server": "^14.1.1"
+    "vite": "^5.4.10"
   }
 }
