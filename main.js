@@ -184,32 +184,39 @@ If it does not valid, please output the reason
     }
 
     generateButton.addEventListener("click", async () => {
-        // TODO: loading...
+        generateButton.disabled = true;
+        generateButton.innerHTML = 'Generating <i class="fa-solid fa-spinner fa-spin-pulse"></i>';
+
         clearResult();
 
-        const passwordRules = passwordRulesInput.value.trim();
+        try {
+            const passwordRules = passwordRulesInput.value.trim();
 
-        const maxPasswordLength = await findMaxPasswordLength(passwordRules);
+            const maxPasswordLength = await findMaxPasswordLength(passwordRules);
 
-        // TODO: check is maxPasswordLength is a number
+            // TODO: check is maxPasswordLength is a number
 
-        const requirementCharSet = await findRequirementCharSet(passwordRules);
+            const requirementCharSet = await findRequirementCharSet(passwordRules);
 
-        console.log(maxPasswordLength);
-        console.log(requirementCharSet);
+            console.log(maxPasswordLength);
+            console.log(requirementCharSet);
 
-        // TODO: 自動重新嘗試密碼 20 次
-        const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
-        console.log(password);
+            // TODO: 自動重新嘗試密碼 20 次
+            const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
+            console.log(password);
 
-        const passwordValidResult = await checkPasswordValid(password, passwordRules);
-        console.log(passwordValidResult);
+            const passwordValidResult = await checkPasswordValid(password, passwordRules);
+            console.log(passwordValidResult);
 
-        const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
-        if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'vaild') {
-            showSuccess(password);
-        } else {
-            showFailed('Generate Password: ' + password + "\n" + passwordValidResult);
+            const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
+            if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'valid') {
+                showSuccess(password);
+            } else {
+                showFailed('Generate Password: ' + password + "\n" + passwordValidResult);
+            }
+        } finally { 
+            generateButton.disabled = false;
+            generateButton.innerHTML = 'Generate ✨';
         }
     });
 
