@@ -2,6 +2,7 @@
     const errorMessage = document.getElementById("error-message");
     const passwordRulesInput = document.getElementById("password-rules-input");
     const generateButton = document.getElementById("generate");
+    const passwordCode = document.getElementById("password");
 
     if (!self.ai || !self.ai.languageModel) {
         errorMessage.style.display = "block";
@@ -169,5 +170,11 @@ If it does not valid, please output the reason
 
         const passwordValidResult = await checkPasswordValid(password, passwordRules);
         console.log(passwordValidResult);
+
+        if (passwordValidResult.toLowerCase() === 'yes') {
+            passwordCode.innerText = password;
+        } else {
+            // TODO: show error message
+        }
     });
 })();
