@@ -162,9 +162,30 @@ If it does not valid, please output the reason
         return parseLLMoutput(result);
     };
 
+    const clearResult = () => {
+        resultBlock.style.display = "none";
+
+        generateSuccess.style.display = "none";
+        generateFailed.style.display = "none";
+    }
+
+    const showSuccess = (password) => { 
+        resultBlock.style.display = "block";
+
+        passwordCode.innerText = password;
+        generateSuccess.style.display = "block";
+    }
+
+    const showFailed = (message) => {
+        resultBlock.style.display = "block";
+
+        passwordFailedMessage.innerText = message;
+        generateFailed.style.display = "block";
+    }
+
     generateButton.addEventListener("click", async () => {
         // TODO: loading...
-        // TODO: clear result
+        clearResult();
 
         const passwordRules = passwordRulesInput.value.trim();
 
@@ -184,14 +205,11 @@ If it does not valid, please output the reason
         const passwordValidResult = await checkPasswordValid(password, passwordRules);
         console.log(passwordValidResult);
 
-        resultBlock.style.display = "block";
         const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
         if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'vaild') {
-            passwordCode.innerText = password;
-            generateSuccess.style.display = "block";
+            showSuccess(password);
         } else {
-            passwordFailedMessage.innerText = 'Generate Password: ' + password + "\n" + passwordValidResult;
-            generateFailed.style.display = "block";
+            showFailed('Generate Password: ' + password + "\n" + passwordValidResult);
         }
     });
 
