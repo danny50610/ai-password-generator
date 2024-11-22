@@ -143,7 +143,7 @@ ${passwordRules}
 
 The password chosen by the supervisor is:
 \`\`\`
-12345678
+${password}
 \`\`\`
 
 Is the password valid?
