@@ -17,7 +17,7 @@
     const capabilities = await ai.languageModel.capabilities();
     console.log(capabilities);
 
-    // TEST
+    // FIXME: TEST
     passwordRulesInput.value = 'At least 10 characters, must include a mix of letters and numbers, with no more than 4 consecutive numeric characters';
 
     const parseLLMoutput = (llmOutput) => {
@@ -164,6 +164,9 @@ If it does not valid, please output the reason
         const passwordRules = passwordRulesInput.value.trim();
 
         const maxPasswordLength = await findMaxPasswordLength(passwordRules);
+
+        // TODO: check is maxPasswordLength is a number
+
         const requirementCharSet = await findRequirementCharSet(passwordRules);
 
         console.log(maxPasswordLength);
@@ -187,10 +190,10 @@ If it does not valid, please output the reason
     passwordCopyButton.addEventListener("click", () => {
         navigator.clipboard.writeText(passwordCode.innerText)
             .then(() => {
-                console.log('Password copied to clipboard');
+                alert('Password copied to clipboard');
             })
             .catch((err) => {
-                console.error(err);
+                alert(err);
             });
     });
 })();
