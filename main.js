@@ -1,5 +1,7 @@
 (async () => {
     const errorMessage = document.getElementById("error-message");
+    
+    const examplesSelect = document.getElementById("examples-select");
     const passwordRulesInput = document.getElementById("password-rules-input");
     const generateButton = document.getElementById("generate");
 
@@ -19,8 +21,30 @@
     const capabilities = await ai.languageModel.capabilities();
     console.log(capabilities);
 
-    // FIXME: TEST
-    passwordRulesInput.value = 'At least 10 characters, must include a mix of letters and numbers, with no more than 4 consecutive numeric characters';
+    const examples = [
+        'Minimum 8 characters',
+        'Minimum 16 characters',
+        'At least 8 characters, must include a mix of letters and numbers, and contain a special character',
+        'At least 12 characters, must include a mix of letters and numbers, and contain a special character',
+        'At least 8 characters, at most 16 characters, must include a mix of letters and numbers',
+        'At least 10 characters, must include a mix of letters and numbers, with no more than 4 consecutive numeric characters',
+        'At least 8 characters, must include a mix of letters and numbers, and the password cannot be \'12345678\' or \'password\'',
+        'At least 8 characters, must include a mix of letters and numbers, and must not contain the date of birth',
+        'At least 8 characters, must include a mix of letters and numbers, and must not contain the ID number.',
+        'At least 8 characters, must include a mix of letters and numbers, and must not contain common English words.',
+        'Must be at least 8 characters, 1 uppercase, 1 lowercase & 1 number',
+    ];
+
+    examples.forEach((example, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.text = example;
+        examplesSelect.appendChild(option);
+    });
+
+    examplesSelect.addEventListener("change", function (event) {
+        passwordRulesInput.value = examples[event.target.value];
+    });
 
     const parseLLMoutput = (llmOutput) => {
         const outputIndex = llmOutput.lastIndexOf("Output:");

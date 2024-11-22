@@ -24,12 +24,14 @@
         <div id="error-message" class="alert alert-danger" role="alert" style="display: none;">
         </div>
 
-        <!-- TODO: Load example -->
-        <!-- TODO: run Batch test -->
+        <select id="examples-select" class="form-select form-select-sm mb-2">
+            <option value="" disabled selected>Load Example ...</option>
+        </select>
+        <!-- TODO: run Batch test use console-->
 
         <h2>Password complexity rules</h2>
         <div class="mb-3">
-            <textarea class="form-control" id="password-rules-input" rows="10"></textarea>
+            <textarea class="form-control" id="password-rules-input" rows="5"></textarea>
         </div>
 
         <button id="generate" type="button" class="btn btn-primary mb-3">Generate ✨</button>
