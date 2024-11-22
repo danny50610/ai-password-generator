@@ -2,6 +2,8 @@
     const errorMessage = document.getElementById("error-message");
     const passwordRulesInput = document.getElementById("password-rules-input");
     const generateButton = document.getElementById("generate");
+
+    const resultBlock = document.getElementById("result");
     const passwordCode = document.getElementById("password");
     const passwordCopyButton = document.getElementById("copy-password");
     const generateSuccess = document.getElementById("generate-success");
@@ -161,6 +163,9 @@ If it does not valid, please output the reason
     };
 
     generateButton.addEventListener("click", async () => {
+        // TODO: loading...
+        // TODO: clear result
+
         const passwordRules = passwordRulesInput.value.trim();
 
         const maxPasswordLength = await findMaxPasswordLength(passwordRules);
@@ -172,12 +177,14 @@ If it does not valid, please output the reason
         console.log(maxPasswordLength);
         console.log(requirementCharSet);
 
+        // TODO: 自動重新嘗試密碼 20 次
         const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
         console.log(password);
 
         const passwordValidResult = await checkPasswordValid(password, passwordRules);
         console.log(passwordValidResult);
 
+        resultBlock.style.display = "block";
         const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
         if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'vaild') {
             passwordCode.innerText = password;
