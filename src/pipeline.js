@@ -1,4 +1,4 @@
-import { findMaxPasswordLength, findRequirementCharSet, generateRandomPassword, checkPasswordValid } from './pipeline-block.js';
+import { findMaxPasswordLength, findRequirementCharSet, generateRandomPassword, checkPasswordValid } from './llm.js';
 
 const generatePipeLine = [
     async (contexts) => {
