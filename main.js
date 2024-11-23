@@ -222,7 +222,7 @@ If it does not valid, please output the reason
             if (!isInt(maxPasswordLength) || parseInt(maxPasswordLength) <= 0) {
                 return {
                     contexts: contexts,
-                    error: 'Cannot find the maximum password length, please modify the password complexity requirements',
+                    error: 'Cannot find the maximum password length, please check the password complexity requirements',
                 }
             }
 
