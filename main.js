@@ -33,6 +33,7 @@
         'At least 8 characters, must include a mix of letters and numbers, and must not contain the ID number.',
         'At least 8 characters, must include a mix of letters and numbers, and must not contain common English words.',
         'Must be at least 8 characters, 1 uppercase, 1 lowercase & 1 number',
+        'Minimum 16 characters, max 8 characters',
     ];
 
     examples.forEach((example, index) => {
@@ -66,8 +67,9 @@ You are an office assistant responsible for helping your supervisor generate pas
             topK: 3,
             systemPrompt: `
 ${systemPromptRole}
-If the company's password complexity does not have a minimum password length limit, the default is a minimum of 8 characters
+If the company's password complexity does not have a minimum password length limit, the default is a minimum of 8 characters.
 If the company's password complexity does not have a maximum password length limit, the default maximum number of characters requires same as the minimum number of characters.
+If the maximum length limit is less than the minimum length limit, output "-1".
 
             `,
         });
@@ -80,6 +82,8 @@ ${passwordRules}
 
 Regarding this requirement, what is the maximum number of characters in the password?
         `);
+
+        console.debug(result);
 
         session.destroy();
 
@@ -135,6 +139,8 @@ ${passwordRules}
 
 Regarding this requirement, is ${characterSetName} required in the password?
         `);
+
+        console.debug(result);
 
         session.destroy();
 
@@ -212,7 +218,13 @@ If it does not valid, please output the reason
             const passwordRules = contexts.passwordRules;
             const maxPasswordLength = await findMaxPasswordLength(passwordRules);
 
-            // TODO: check is maxPasswordLength is a number
+            const isInt= (string) => /^\d+$/.test(string);
+            if (!isInt(maxPasswordLength) || parseInt(maxPasswordLength) <= 0) {
+                return {
+                    contexts: contexts,
+                    error: 'Cannot find the maximum password length, please modify the password complexity requirements',
+                }
+            }
 
             contexts.maxPasswordLength = maxPasswordLength;
 
@@ -273,17 +285,21 @@ If it does not valid, please output the reason
                 passwordRules: passwordRules,
             };
 
+            let isError = false;
             for (const pipe of generatePipeLine) {
                 const result = await pipe(contexts);
                 console.debug(structuredClone(result));
                 if (result.error) {
+                    isError = true;
                     showFailed(result.error);
                     break;
                 }
                 contexts = result.contexts;
             }
 
-            showSuccess(contexts.password);
+            if (!isError) {
+                showSuccess(contexts.password);
+            }
         } finally { 
             generateButton.disabled = false;
             generateButton.innerHTML = 'Generate ✨';
