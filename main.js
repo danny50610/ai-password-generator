@@ -34,6 +34,7 @@
         'At least 8 characters, must include a mix of letters and numbers, and must not contain common English words.',
         'Must be at least 8 characters, 1 uppercase, 1 lowercase & 1 number',
         'Minimum 16 characters, max 8 characters',
+        'Minimum 8 characters, must empty string',
     ];
 
     examples.forEach((example, index) => {
@@ -237,7 +238,12 @@ If it does not valid, please output the reason
             const passwordRules = contexts.passwordRules;
             const requirementCharSet = await findRequirementCharSet(passwordRules);
 
-            // TODO: check is requirementCharSet is not empty
+            if (requirementCharSet.length === 0) {
+                return {
+                    contexts: contexts,
+                    error: 'Cannot find the requirement character set, please check the password complexity requirements',
+                };
+            }
 
             contexts.requirementCharSet = requirementCharSet;
 
