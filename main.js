@@ -207,6 +207,59 @@ If it does not valid, please output the reason
         generateFailed.style.display = "block";
     }
 
+    const generatePipeLine = [
+        async (contexts) => {
+            const passwordRules = contexts.passwordRules;
+            const maxPasswordLength = await findMaxPasswordLength(passwordRules);
+
+            // TODO: check is maxPasswordLength is a number
+
+            contexts.maxPasswordLength = maxPasswordLength;
+
+            return {
+                contexts: contexts,
+                error: null,
+            }
+        },
+        async (contexts) => {
+            const passwordRules = contexts.passwordRules;
+            const requirementCharSet = await findRequirementCharSet(passwordRules);
+
+            // TODO: check is requirementCharSet is not empty
+
+            contexts.requirementCharSet = requirementCharSet;
+
+            return {
+                contexts: contexts,
+                error: null,
+            }
+        },
+        async (contexts) => {
+            const passwordRules = contexts.passwordRules;
+            const maxPasswordLength = contexts.maxPasswordLength;
+            const requirementCharSet = contexts.requirementCharSet;
+
+            // TODO: 自動重新嘗試密碼 20 次
+            const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
+            contexts.password = password;
+
+            const passwordValidResult = await checkPasswordValid(password, passwordRules);
+
+            const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
+            if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'valid') {
+                return {
+                    contexts: contexts,
+                    error: null,
+                }
+            } else {
+                return {
+                    contexts: contexts,
+                    error: 'Generate Password: ' + password + "\n" + passwordValidResult,
+                }
+            }
+        },
+    ];
+
     generateButton.addEventListener("click", async () => {
         generateButton.disabled = true;
         generateButton.innerHTML = 'Generating <i class="fa-solid fa-spinner fa-spin-pulse"></i>';
@@ -216,28 +269,21 @@ If it does not valid, please output the reason
         try {
             const passwordRules = passwordRulesInput.value.trim();
 
-            const maxPasswordLength = await findMaxPasswordLength(passwordRules);
+            let contexts = {
+                passwordRules: passwordRules,
+            };
 
-            // TODO: check is maxPasswordLength is a number
-
-            const requirementCharSet = await findRequirementCharSet(passwordRules);
-
-            console.log(maxPasswordLength);
-            console.log(requirementCharSet);
-
-            // TODO: 自動重新嘗試密碼 20 次
-            const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
-            console.log(password);
-
-            const passwordValidResult = await checkPasswordValid(password, passwordRules);
-            console.log(passwordValidResult);
-
-            const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
-            if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'valid') {
-                showSuccess(password);
-            } else {
-                showFailed('Generate Password: ' + password + "\n" + passwordValidResult);
+            for (const pipe of generatePipeLine) {
+                const result = await pipe(contexts);
+                console.debug(structuredClone(result));
+                if (result.error) {
+                    showFailed(result.error);
+                    break;
+                }
+                contexts = result.contexts;
             }
+
+            showSuccess(contexts.password);
         } finally { 
             generateButton.disabled = false;
             generateButton.innerHTML = 'Generate ✨';
