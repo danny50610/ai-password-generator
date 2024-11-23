@@ -69,6 +69,13 @@ export async function findRequirementCharSet(passwordRules) {
         }
     }
 
+    if (requirementCharSet.length === 0) {
+        const result = await testSuitabilityCharSet(passwordRules, characterSets[0].name);
+        if (result === 'yes' || result === 'true') {
+            requirementCharSet.push(characterSets[0]);
+        }
+    }
+
     return requirementCharSet;
 };
 
@@ -80,7 +87,7 @@ async function testRequirementCharSet(passwordRules, characterSetName) {
 ${systemPromptRole}
 Available character sets include:
 ${characterSets.map((charSet) => `- ${charSet.name}`).join("\n")}
-            `,
+`,
     });
 
     const result = await session.prompt(`
@@ -89,7 +96,7 @@ The following are the company’s password complexity requirements:
 ${passwordRules}
 \`\`\`
 
-Regarding this requirement, is ${characterSetName} required in the password?
+Regarding this requirement, is "${characterSetName}" required in the password ?
         `);
 
     console.debug(result);
@@ -98,6 +105,33 @@ Regarding this requirement, is ${characterSetName} required in the password?
 
     return parseLLMoutput(result).toLowerCase();
 };
+
+async function testSuitabilityCharSet(passwordRules, characterSetName) {
+    const session = await self.ai.languageModel.create({
+        temperature: 0,
+        topK: 3,
+        systemPrompt: `
+${systemPromptRole}
+Available character sets include:
+${characterSets.map((charSet) => `- ${charSet.name}`).join("\n")}
+`,
+    });
+
+    const result = await session.prompt(`
+The following are the company’s password complexity requirements:
+\`\`\`
+${passwordRules}
+\`\`\`
+
+Should "${characterSetName}" be used in the password for this requirement?
+        `);
+
+    console.debug(result);
+
+    session.destroy();
+
+    return parseLLMoutput(result).toLowerCase();
+}
 
 export function generateRandomPassword(length, requirementCharSet) {
     const characterSetsString = requirementCharSet.map((charSet) => charSet.chars).join('');

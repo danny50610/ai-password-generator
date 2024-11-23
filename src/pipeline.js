@@ -5,7 +5,7 @@ const generatePipeLine = [
         const passwordRules = contexts.passwordRules;
         const maxPasswordLength = await findMaxPasswordLength(passwordRules);
 
-        const isInt= (string) => /^\d+$/.test(string);
+        const isInt = (string) => /^\d+$/.test(string);
         if (!isInt(maxPasswordLength) || parseInt(maxPasswordLength) <= 0) {
             return {
                 contexts: contexts,
