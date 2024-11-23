@@ -4,6 +4,7 @@
     const examplesSelect = document.getElementById("examples-select");
     const passwordRulesInput = document.getElementById("password-rules-input");
     const generateButton = document.getElementById("generate");
+    const generateProgressBar = document.getElementById("generate-progressbar");
 
     const resultBlock = document.getElementById("result");
     const passwordCode = document.getElementById("password");
@@ -200,6 +201,8 @@ If it does not valid, please output the reason
 
         generateSuccess.style.display = "none";
         generateFailed.style.display = "none";
+
+        generateProgressBar.children[0].style.width = "0%";
     }
 
     const showSuccess = (password) => { 
@@ -299,7 +302,7 @@ If it does not valid, please output the reason
             };
 
             let isError = false;
-            for (const pipe of generatePipeLine) {
+            for (const [index, pipe] of generatePipeLine.entries()) {
                 const result = await pipe(contexts);
                 console.debug(structuredClone(result));
                 if (result.error) {
@@ -308,6 +311,8 @@ If it does not valid, please output the reason
                     break;
                 }
                 contexts = result.contexts;
+
+                generateProgressBar.children[0].style.width = `${(index + 1) * 100 / generatePipeLine.length}%`;
             }
 
             if (!isError) {
