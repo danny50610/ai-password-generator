@@ -1,5 +1,6 @@
 import examples from './examples.js';
-import generatePipeLine from './pipeline.js';
+import runPipeline from './pipeline.js';
+import './test.js';
 
 (async () => {
     const errorMessage = document.getElementById("error-message");
@@ -70,8 +71,8 @@ import generatePipeLine from './pipeline.js';
 
             await runPipeline(
                 passwordRules,
-                (index) => {
-                    generateProgressBar.children[0].style.width = `${(index + 1) * 100 / generatePipeLine.length}%`;
+                (index, total) => {
+                    generateProgressBar.children[0].style.width = `${(index + 1) * 100 / total}%`;
                 },
                 showSuccess,
                 showFailed,
@@ -92,36 +93,3 @@ import generatePipeLine from './pipeline.js';
             });
     });
 })();
-
-async function runPipeline(
-    passwordRules,
-    updateProgressBarFunc,
-    showSuccessFunc,
-    showFailedFunc,
-) {
-    let contexts = {
-        passwordRules: passwordRules,
-    };
-
-    let isError = false;
-    for (const [index, pipe] of generatePipeLine.entries()) {
-        const result = await pipe(contexts);
-        console.debug(structuredClone(result));
-        if (result.error) {
-            isError = true;
-            showFailedFunc(result.error);
-            break;
-        }
-        contexts = result.contexts;
-
-        updateProgressBarFunc(index);
-    }
-
-    if (!isError) {
-        showSuccessFunc(contexts.password);
-    }
-}
-
-window.runTests = function () {
-    console.log('testA');
-}

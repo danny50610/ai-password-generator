@@ -69,4 +69,38 @@ const generatePipeLine = [
     },
 ];
 
-export default generatePipeLine;
+async function runPipeline(
+    passwordRules,
+    updateProgressBarFunc,
+    showSuccessFunc,
+    showFailedFunc,
+) {
+    let contexts = {
+        passwordRules: passwordRules,
+    };
+
+    let isError = false;
+    for (const [index, pipe] of generatePipeLine.entries()) {
+        const result = await pipe(contexts);
+        console.debug(structuredClone(result));
+        if (result.error) {
+            isError = true;
+            showFailedFunc(result.error);
+            break;
+        }
+        contexts = result.contexts;
+
+        updateProgressBarFunc(index, generatePipeLine.length);
+    }
+
+    if (!isError) {
+        showSuccessFunc(contexts.password);
+    }
+
+    return {
+        contexts: contexts,
+        isError: isError,
+    };
+}
+
+export default runPipeline;
