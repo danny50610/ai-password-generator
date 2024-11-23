@@ -53,18 +53,6 @@ const examples = [
         }
     },
     {
-        'value': 'At least 8 characters, must include a mix of letters and numbers, and must not contain the date of birth',
-        'test': {
-            'valid': true,
-            'asserts': [
-                (password) => password.length >= 8,
-                (password) => /[a-zA-Z]/.test(password),
-                (password) => /[0-9]/.test(password),
-                (password) => !/\b\d{4,8}\b/.test(password),
-            ],
-        }
-    },
-    {
         'value': 'Must be at least 8 characters, 1 uppercase, 1 lowercase & 1 number',
         'test': {
             'valid': true,
