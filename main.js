@@ -187,6 +187,8 @@ ${password}
 Is the password valid?
 If it does not valid, please output the reason
         `);
+        
+        console.debug(result);
 
         session.destroy();
 
@@ -257,24 +259,29 @@ If it does not valid, please output the reason
             const maxPasswordLength = contexts.maxPasswordLength;
             const requirementCharSet = contexts.requirementCharSet;
 
-            // TODO: 自動重新嘗試密碼 20 次
-            const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
-            contexts.password = password;
+            let error = '';
+            for (let i = 0; i < 20; i += 1) {
+                const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
+                contexts.password = password;
 
-            const passwordValidResult = await checkPasswordValid(password, passwordRules);
+                const passwordValidResult = await checkPasswordValid(password, passwordRules);
 
-            const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
-            if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'valid') {
-                return {
-                    contexts: contexts,
-                    error: null,
-                }
-            } else {
-                return {
-                    contexts: contexts,
-                    error: 'Generate Password: ' + password + "\n" + passwordValidResult,
+                const passwordValidResultoLowerCase = passwordValidResult.toLowerCase();
+                if (passwordValidResultoLowerCase === 'yes' || passwordValidResultoLowerCase === 'valid') {
+                    contexts.password = password;
+                    return {
+                        contexts: contexts,
+                        error: null,
+                    };
+                } else {
+                    error = 'Generate Password: ' + password + "\n" + passwordValidResult;
                 }
             }
+
+            return {
+                contexts: contexts,
+                error: error,
+            };
         },
     ];
 
