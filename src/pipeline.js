@@ -1,6 +1,25 @@
-import { findMaxPasswordLength, findRequirementCharSet, generateRandomPassword, checkPasswordValid } from './llm.js';
+import { translateToEnglish, findMaxPasswordLength, findRequirementCharSet, generateRandomPassword, checkPasswordValid } from './llm.js';
 
 const generatePipeLine = [
+    async (contexts) => {
+        const passwordRules = contexts.passwordRules;
+
+        const result = await translateToEnglish(passwordRules);
+
+        if (result.error) {
+            return {
+                contexts: contexts,
+                error: result.error,
+            };
+        }
+
+        contexts.passwordRules = result.result;
+
+        return {
+            contexts: contexts,
+            error: null,
+        };
+    },
     async (contexts) => {
         const passwordRules = contexts.passwordRules;
         const maxPasswordLength = await findMaxPasswordLength(passwordRules);

@@ -65,6 +65,17 @@ const examples = [
         }
     },
     {
+        'value': '長度須介於8到16個字元以 內，其中至少要包含一個半型英文字和一個半型數字',
+        'test': {
+            'valid': true,
+            'asserts': [
+                (password) => password.length >= 8 && password.length <= 16,
+                (password) => /[a-zA-Z]/.test(password),
+                (password) => /[0-9]/.test(password),
+            ],
+        }
+    },
+    {
         'value': 'Minimum 16 characters, max 8 characters',
         'test': {
             'valid': false,

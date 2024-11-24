@@ -19,7 +19,26 @@ import './test.js';
 
     if (!self.ai || !self.ai.languageModel) {
         errorMessage.style.display = "block";
-        errorMessage.innerHTML = `Your browser doesn't support the Prompt API. If you're on Chrome, join the <a href="https://developer.chrome.com/docs/ai/built-in#get_an_early_preview">Early Preview Program</a> to enable it.`;
+        errorMessage.innerHTML = "Your browser doesn't support the Prompt API.";
+        return;
+    }
+
+    if (!('translation' in self && 'canDetect' in self.translation && 'createTranslator' in self.translation)) {
+        // chrome://flags/#language-detection-api
+        // chrome://flags/#translation-api
+        errorMessage.style.display = "block";
+        errorMessage.innerHTML = "Your browser doesn't support the Translation API";
+        return;
+    }
+
+    const canDetect = await translation.canDetect();
+    if (canDetect === 'no') {
+        errorMessage.style.display = "block";
+        errorMessage.innerHTML = "Your browser doesn't support the Translation API";
+        return;
+    } else if (canDetect === 'after-download') {
+        errorMessage.style.display = "block";
+        errorMessage.innerHTML = "Please wait browse download the translation model";
         return;
     }
 

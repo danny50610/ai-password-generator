@@ -6,6 +6,39 @@ export function parseLLMoutput(llmOutput) {
     return null;
 };
 
+export async function translateToEnglish(passwordRules) {
+    const detector = await translation.createDetector();
+    const results = await detector.detect(passwordRules);
+
+    console.debug(results);
+    if (results[0].detectedLanguage === 'en' && results[0].confidence >= 0.8) {
+        return {
+            'result': passwordRules,
+        };
+    }
+
+    const checkCanTranslate = await self.translation.canTranslate({
+        sourceLanguage: results[0].detectedLanguage,
+        targetLanguage: 'en',
+    });
+
+    if (checkCanTranslate === 'no') {
+        return {
+            'error': 'Cannot translate to English, please use English text',
+        }
+    }
+
+    const translator = await self.translation.createTranslator({
+        sourceLanguage: results[0].detectedLanguage,
+        targetLanguage: 'en',
+    });
+
+    const translatedPasswordRules = await translator.translate(passwordRules);
+    return {
+        'result': translatedPasswordRules,
+    }
+}
+
 const systemPromptRole = `
 Think step by step, and when you finally output the result, put it on a separate line and add: "Output: " at the beginning.
 You are an office assistant responsible for helping your supervisor generate passwords that meet company requirements.
