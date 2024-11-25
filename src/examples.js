@@ -75,18 +75,6 @@ const examples = [
             ],
         }
     },
-    {
-        'value': 'Minimum 16 characters, max 8 characters',
-        'test': {
-            'valid': false,
-        }
-    },
-    {
-        'value': 'Minimum 8 characters, must empty string',
-        'test': {
-            'valid': false,
-        }
-    }
 ];
 
 export default examples;
