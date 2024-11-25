@@ -63,7 +63,7 @@ const generatePipeLine = [
         const requirementCharSet = contexts.requirementCharSet;
 
         let error = '';
-        for (let i = 0; i < 20; i += 1) {
+        for (let i = 0; i < 3; i += 1) {
             const password = generateRandomPassword(maxPasswordLength, requirementCharSet);
             contexts.password = password;
 
